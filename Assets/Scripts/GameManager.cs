@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,10 +45,57 @@ public class GameManager : MonoBehaviour
             cells[cellIndex] = 1;
             transform.GetChild(cellIndex).GetComponent<Image>().color = color;
             
-            score+=5;
+            score+=3;
             scoreText.text = score.ToString();
-                
+            
             Debug.Log("placed to " + cellIndex);
         }
+        
+        checkForBurn();
+    }
+
+    void checkForBurn()
+    {
+        List<int> listToDelete = new List<int>();
+        int counter = 0;
+        for (int i = 0; i < 100; i++) //horizontal
+        {
+            if (i % 10 == 0) counter = 0;
+            if (cells[i] == 1) counter++;
+            if (counter == 10)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    listToDelete.Add(i-j);
+                }
+            }
+        }
+        
+        counter = 0;
+        for (int i = 0; i < 10; i++) //Vertical
+        {
+            counter = 0;
+            for (int j = 0; j < 10; j++)
+            {
+                if (cells[j*10+i] == 1) counter++;
+            }
+           
+            if (counter == 10)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    listToDelete.Add(i+j*10);
+                }
+            }
+        }
+        
+        for (int i = 0; i < listToDelete.Count; i++)
+        {
+            cells[listToDelete[i]] = 0; 
+            transform.GetChild(listToDelete[i]).GetComponent<Image>().color = new Color(0, 0, 0, 0.254f);
+            score+=5;
+            scoreText.text = score.ToString();
+        }
+        listToDelete.Clear();
     }
 }
