@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private int[] cells = new int[100]; // 0 - пусто, 1 - занято
-
+    [SerializeField] private Text scoreText;
+    private int score = 0;
     private void Start()
     {
         for (int i = 0; i < cells.Length; i++)
@@ -25,6 +26,12 @@ public class GameManager : MonoBehaviour
                 canPlace = false;
                 Debug.Log("Can't place here");
             }
+
+            if (((int)shapeCell.y*(-10) + (int)shapeCell.x + dropCellIndex) % 10 == 9 && shapeCell.x < 0)
+            {
+                canPlace = false;
+                Debug.Log("i'm here");
+            }
         }
         return canPlace;
     }
@@ -36,6 +43,10 @@ public class GameManager : MonoBehaviour
             int cellIndex = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
             cells[cellIndex] = 1;
             transform.GetChild(cellIndex).GetComponent<Image>().color = color;
+            
+            score+=5;
+            scoreText.text = score.ToString();
+                
             Debug.Log("placed to " + cellIndex);
         }
     }
