@@ -9,6 +9,11 @@ public class GameManager : MonoBehaviour
     private int[] cells = new int[100]; // 0 - пусто, 1 - занято
     [SerializeField] private Text scoreText;
     private int score = 0;
+    [SerializeField] private float secondsleft = 30f;
+    [SerializeField] private Text secondsText;
+    [SerializeField] private GameObject gameOver;
+    
+    
     private void Start()
     {
         for (int i = 0; i < cells.Length; i++)
@@ -45,8 +50,9 @@ public class GameManager : MonoBehaviour
             cells[cellIndex] = 1;
             transform.GetChild(cellIndex).GetComponent<Image>().color = color;
             
-            score+=3;
+            score++;
             scoreText.text = score.ToString();
+            addTime(0.5f);
             
             Debug.Log("placed to " + cellIndex);
         }
@@ -93,9 +99,27 @@ public class GameManager : MonoBehaviour
         {
             cells[listToDelete[i]] = 0; 
             transform.GetChild(listToDelete[i]).GetComponent<Image>().color = new Color(0, 0, 0, 0.254f);
-            score+=5;
+            score++;
+            addTime(0.5f);
             scoreText.text = score.ToString();
         }
         listToDelete.Clear();
+    }
+
+    private void addTime(float seconds)
+    {
+        secondsleft += seconds;
+    }
+
+    private void FixedUpdate()
+    {
+        secondsleft -= 0.02f;
+        secondsText.text = secondsleft.ToString("0.0") + "s";
+
+        if (secondsleft <= 0)
+        {
+            gameOver.SetActive(true);
+            Time.timeScale = 0;
+        }
     }
 }

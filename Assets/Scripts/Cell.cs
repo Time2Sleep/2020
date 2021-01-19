@@ -16,6 +16,7 @@ public class Cell : MonoBehaviour, IDropHandler
         if (gameManager.checkCells(shape.shapeCells, transform.GetSiblingIndex() - 10))
         {
             gameManager.placeShape(shape.shapeCells, transform.GetSiblingIndex() - 10, shape.shapeColor);
+            Destroy(eventData.pointerDrag.gameObject);
         }
     }
 }
