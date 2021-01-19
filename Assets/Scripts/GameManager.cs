@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     public bool checkCells(Vector2[] shapeCells, int dropCellIndex)
     {
+        Debug.Log(dropCellIndex);
         bool canPlace = true;
         foreach (Vector2 shapeCell in shapeCells)
         {
@@ -48,7 +49,7 @@ public class GameManager : MonoBehaviour
         {
             int cellIndex = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
             cells[cellIndex] = 1;
-            transform.GetChild(cellIndex).GetComponent<Image>().color = color;
+            transform.GetChild(cellIndex).GetChild(0).GetComponent<Image>().color = color;
             
             score++;
             scoreText.text = score.ToString();
@@ -98,7 +99,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < listToDelete.Count; i++)
         {
             cells[listToDelete[i]] = 0; 
-            transform.GetChild(listToDelete[i]).GetComponent<Image>().color = new Color(0, 0, 0, 0.254f);
+            transform.GetChild(listToDelete[i]).GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0.254f);
             score++;
             addTime(0.5f);
             scoreText.text = score.ToString();

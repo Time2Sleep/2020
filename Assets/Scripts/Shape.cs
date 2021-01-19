@@ -33,7 +33,7 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
 
    public void OnDrag(PointerEventData eventData)
    {
-      GetComponent<RectTransform>().position = Input.mousePosition + new Vector3(0, 75f, 0 );
+      GetComponent<RectTransform>().position = Input.mousePosition + new Vector3(0, 90f, 0 );
    }
 
    
