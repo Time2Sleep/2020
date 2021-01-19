@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,34 +14,49 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float secondsleft = 30f;
     [SerializeField] private Text secondsText;
     [SerializeField] private GameObject gameOver;
-    
-    
+    private SpawnShape[] spawners;
+
     private void Start()
     {
         for (int i = 0; i < cells.Length; i++)
         {
             cells[i] = 0;
         }
+
+        spawners = FindObjectsOfType<SpawnShape>();
     }
 
     public bool checkCells(Vector2[] shapeCells, int dropCellIndex)
     {
-        Debug.Log(dropCellIndex);
         bool canPlace = true;
-        foreach (Vector2 shapeCell in shapeCells)
+        try
         {
-            if (cells[(int)shapeCell.y*(-10) + (int)shapeCell.x + dropCellIndex] == 1) //можно за пределы массива уйти
+            foreach (Vector2 shapeCell in shapeCells)
             {
-                canPlace = false;
-                Debug.Log("Can't place here");
-            }
+                int index = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
+                if (index < 0)
+                {
+                    return false;
+                }
 
-            if (((int)shapeCell.y*(-10) + (int)shapeCell.x + dropCellIndex) % 10 == 9 && shapeCell.x < 0)
-            {
-                canPlace = false;
-                Debug.Log("i'm here");
+                if (cells[index] == 1
+                ) //можно за пределы массива уйти
+                {
+                    canPlace = false;
+                }
+
+                if (index % 10 == 9 && shapeCell.x < 0)
+                {
+                    canPlace = false;
+                }
             }
         }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+
         return canPlace;
     }
 
@@ -49,16 +66,37 @@ public class GameManager : MonoBehaviour
         {
             int cellIndex = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
             cells[cellIndex] = 1;
-            transform.GetChild(cellIndex).GetChild(0).GetComponent<Image>().color = color;
-            
+            transform.GetChild(cellIndex).GetComponentInChildren<CellUI>().changeColor(color);
+
             score++;
             scoreText.text = score.ToString();
-            addTime(0.5f);
-            
-            Debug.Log("placed to " + cellIndex);
+            addTime(0.1f);
+
         }
-        
+
         checkForBurn();
+    }
+
+    private void checkForGameOver()
+    {
+        foreach (SpawnShape spawnShape in spawners)
+        {
+            Vector2[] currentShape = spawnShape.getCurrentShape();
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                if (cells[i] == 0)
+                {
+                    bool canBePlaced = checkCells(currentShape, i);
+                    if (canBePlaced)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        stopGame();
     }
 
     void checkForBurn()
@@ -73,38 +111,39 @@ public class GameManager : MonoBehaviour
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    listToDelete.Add(i-j);
+                    listToDelete.Add(i - j);
                 }
             }
         }
-        
-        counter = 0;
+
         for (int i = 0; i < 10; i++) //Vertical
         {
             counter = 0;
             for (int j = 0; j < 10; j++)
             {
-                if (cells[j*10+i] == 1) counter++;
+                if (cells[j * 10 + i] == 1) counter++;
             }
-           
+
             if (counter == 10)
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    listToDelete.Add(i+j*10);
+                    listToDelete.Add(i + j * 10);
                 }
             }
         }
-        
+
         for (int i = 0; i < listToDelete.Count; i++)
         {
-            cells[listToDelete[i]] = 0; 
-            transform.GetChild(listToDelete[i]).GetChild(0).GetComponent<Image>().color = new Color(0, 0, 0, 0.254f);
+            cells[listToDelete[i]] = 0;
+            transform.GetChild(listToDelete[i]).GetComponentInChildren<CellUI>().fadeOut();
             score++;
             addTime(0.5f);
             scoreText.text = score.ToString();
         }
+
         listToDelete.Clear();
+        checkForGameOver();
     }
 
     private void addTime(float seconds)
@@ -119,8 +158,13 @@ public class GameManager : MonoBehaviour
 
         if (secondsleft <= 0)
         {
-            gameOver.SetActive(true);
-            Time.timeScale = 0;
+            stopGame();
         }
+    }
+
+    private void stopGame()
+    {
+        gameOver.SetActive(true);
+        Time.timeScale = 0;
     }
 }
