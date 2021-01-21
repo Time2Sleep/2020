@@ -53,6 +53,7 @@ MonoBehaviour:
   shapeColor: {r: 0.6603774, g: 0.20870416, b: 0.36133623, a: 1}
   shapeCells:
   - {x: 0, y: 0}
+  isEven: 0
 --- !u!1 &3586583915776411418
 GameObject:
   m_ObjectHideFlags: 0
@@ -87,8 +88,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 150, y: 150}
+  m_AnchoredPosition: {x: 0, y: 49.999996}
+  m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1110314209055810883
 CanvasRenderer:

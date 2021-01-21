@@ -7,11 +7,12 @@ public class CellUI : MonoBehaviour
 {
     // Start is called before the first frame update
     public Image image;
-    private Color defaultColor = new Color(0, 0, 0, 0.254f);
+    private Color defaultColor = new Color(0, 0, 0, 0f);
 
     void Start()
     {
-        image = transform.GetChild(0).GetComponentInChildren<Image>();
+        image = transform.GetChild(1).GetComponentInChildren<Image>();
+        applyStyle();
     }
 
     public void changeColor(Color color)
@@ -30,7 +31,7 @@ public class CellUI : MonoBehaviour
         float overTime = 0.1f;
         while (Time.time < startTime + overTime)
         {
-            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, Time.deltaTime * 10);
+            transform.GetChild(1).localScale = Vector3.Lerp(transform.GetChild(1).localScale, Vector3.zero, Time.deltaTime * 10);
             Debug.Log("computing");
             yield return null;
         }
@@ -41,7 +42,13 @@ public class CellUI : MonoBehaviour
 
     private void toDefault()
     {
-        transform.localScale = new Vector3(1, 1, 1);
+        transform.GetChild(1).localScale = new Vector3(1, 1, 1);
         image.color = defaultColor;
+    }
+
+
+    public void applyStyle()
+    {
+        transform.GetChild(1).GetComponent<Image>().sprite = FindObjectOfType<StyleManager>().getStyle();
     }
 }

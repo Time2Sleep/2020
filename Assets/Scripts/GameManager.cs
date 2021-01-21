@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -12,8 +13,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text scoreText;
     private int score = 0;
     [SerializeField] private float secondsleft = 30f;
-    [SerializeField] private Text secondsText;
+    [SerializeField] private Slider secondsText;
     [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameObject addTimerPopup;
     private SpawnShape[] spawners;
 
     private void Start()
@@ -22,7 +24,6 @@ public class GameManager : MonoBehaviour
         {
             cells[i] = 0;
         }
-
         spawners = FindObjectsOfType<SpawnShape>();
     }
 
@@ -34,18 +35,21 @@ public class GameManager : MonoBehaviour
             foreach (Vector2 shapeCell in shapeCells)
             {
                 int index = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
-                if (index < 0)
+               /*if (index < 0)
                 {
                     return false;
-                }
+                }*/
 
-                if (cells[index] == 1
-                ) //можно за пределы массива уйти
+                if (cells[index] == 1) //можно за пределы массива уйти
+                {
+                    canPlace = false;
+                }
+                if (index % 10 == 9 && shapeCell.x < 0)
                 {
                     canPlace = false;
                 }
 
-                if (index % 10 == 9 && shapeCell.x < 0)
+                if (index % 10 == 0 && shapeCell.x >= 1)
                 {
                     canPlace = false;
                 }
@@ -55,8 +59,6 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }
-
-
         return canPlace;
     }
 
@@ -71,31 +73,29 @@ public class GameManager : MonoBehaviour
             score++;
             scoreText.text = score.ToString();
             addTime(0.1f);
-
         }
-
+        
+        GameObject popup = Instantiate(addTimerPopup, GameObject.Find("Canvas").transform);
+        popup.transform.position = Input.mousePosition + new Vector3(0, 200f, 0);
+        popup.GetComponent<Text>().text = "+" + 0.1f * shapeCells.Length + "s";
+        
         checkForBurn();
     }
 
-    private void checkForGameOver()
+    public void checkForGameOver()
     {
         foreach (SpawnShape spawnShape in spawners)
         {
-            Vector2[] currentShape = spawnShape.getCurrentShape();
-
+            Vector2[] currentShape = spawnShape.getCurrentShape().shapeCells;
             for (int i = 0; i < cells.Length; i++)
             {
-                if (cells[i] == 0)
-                {
-                    bool canBePlaced = checkCells(currentShape, i);
+                bool canBePlaced = checkCells(currentShape, i);
                     if (canBePlaced)
                     {
-                        return;
+                       return;
                     }
-                }
             }
         }
-
         stopGame();
     }
 
@@ -123,7 +123,6 @@ public class GameManager : MonoBehaviour
             {
                 if (cells[j * 10 + i] == 1) counter++;
             }
-
             if (counter == 10)
             {
                 for (int j = 0; j < 10; j++)
@@ -133,7 +132,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < listToDelete.Count; i++)
+        for (int i = 0; i < listToDelete.Count; i++) //Пробегаемся по всем и удаляем
         {
             cells[listToDelete[i]] = 0;
             transform.GetChild(listToDelete[i]).GetComponentInChildren<CellUI>().fadeOut();
@@ -143,22 +142,25 @@ public class GameManager : MonoBehaviour
         }
 
         listToDelete.Clear();
-        checkForGameOver();
     }
 
     private void addTime(float seconds)
     {
         secondsleft += seconds;
+        if (secondsleft > 60)
+        {
+            secondsleft = 60;
+        }
     }
 
     private void FixedUpdate()
     {
         secondsleft -= 0.02f;
-        secondsText.text = secondsleft.ToString("0.0") + "s";
+        secondsText.value = secondsleft/60;
 
         if (secondsleft <= 0)
         {
-            stopGame();
+            //stopGame();
         }
     }
 
@@ -166,5 +168,18 @@ public class GameManager : MonoBehaviour
     {
         gameOver.SetActive(true);
         Time.timeScale = 0;
+    }
+
+    public void applyStyle()
+    {
+        CellUI[] cellUis = GetComponentsInChildren<CellUI>();
+        foreach (CellUI cellUi in cellUis)
+        {
+            cellUi.applyStyle();
+        }
+        foreach (SpawnShape spawnShape in spawners)
+        {
+            spawnShape.getCurrentShape().applyStyle();
+        }
     }
 }

@@ -1,21 +1,29 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler,
-    IPointerUpHandler
+public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private GameManager gameManager;
     private Vector3 startPos;
 
     public Color shapeColor;
     public Vector2[] shapeCells;
     private Coroutine currentCoroutine;
+    [SerializeField] private bool isEven;
+
+    private float offset = 0;
 
     private void Start()
     {
         startPos = GetComponent<RectTransform>().position;
-        gameManager = FindObjectOfType<GameManager>();
+
+        foreach (Vector2 vector2 in shapeCells)
+        {
+            if (vector2.y > offset) offset=vector2.y;
+        }
+
+        applyStyle();
     }
 
 
@@ -55,10 +63,10 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
 
     public void OnDrag(PointerEventData eventData)
     {
-        GetComponent<RectTransform>().position = Input.mousePosition + new Vector3(0, 90f, 0);
+        GetComponent<RectTransform>().position = Input.mousePosition + new Vector3(isEven ? 50 : 0, 100f + offset*50f, 0);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    /*public void OnPointerDown(PointerEventData eventData)
     {
         OnBeginDrag(eventData);
         OnDrag(eventData);
@@ -67,5 +75,13 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
     public void OnPointerUp(PointerEventData eventData)
     {
         OnEndDrag(eventData);
+    }*/
+
+    public void applyStyle()
+    {
+        foreach (Image imageCell in transform.GetComponentsInChildren<Image>())
+        {
+            imageCell.sprite = FindObjectOfType<StyleManager>().getStyle();
+        }
     }
 }

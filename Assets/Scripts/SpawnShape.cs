@@ -1,34 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpawnShape : MonoBehaviour
 {
     [SerializeField] private GameObject[] shapes;
+    [SerializeField] private GameObject[] SpawnPoints;
     private GameManager gameManager;
 
-    void spawnRandomShape()
+    void spawnRandomShape(Transform target)
     {
         int random = Random.Range(0, shapes.Length);
-        GameObject shape = Instantiate(shapes[random], transform);
-        shape.transform.position = transform.position;
+        GameObject shape = Instantiate(shapes[random], target);
+        shape.transform.position = target.transform.position;
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     private void Start()
     {
-        spawnRandomShape();
+        foreach (GameObject spawnPoint in SpawnPoints)
+        {
+            spawnRandomShape(spawnPoint.transform);
+        }
     }
 
-    public Vector2[] getCurrentShape()
+    public Shape getCurrentShape()
     {
-        return GetComponentInChildren<Shape>().shapeCells;
+        return GetComponentInChildren<Shape>();
     }
 
     private void Update()
     {
-        if (transform.childCount == 0)
+        foreach (GameObject spawnPoint in SpawnPoints)
         {
-            spawnRandomShape();
+            if (spawnPoint.transform.childCount == 0)
+            {
+                spawnRandomShape(spawnPoint.transform);
+                gameManager.checkForGameOver();
+            }
         }
     }
+
+    
 }
