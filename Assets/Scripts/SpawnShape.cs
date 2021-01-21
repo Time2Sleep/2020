@@ -25,9 +25,9 @@ public class SpawnShape : MonoBehaviour
         }
     }
 
-    public Shape getCurrentShape()
+    public Shape[] getCurrentShapes()
     {
-        return GetComponentInChildren<Shape>();
+        return GetComponentsInChildren<Shape>();
     }
 
     private void Update()

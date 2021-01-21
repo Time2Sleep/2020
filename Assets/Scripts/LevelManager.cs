@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class LevelManager : MonoBehaviour
     
     public void pause()
     {
+        pauseOverlay.GetComponent<Image>().color = Camera.main.backgroundColor;
         pauseOverlay.SetActive(true);
         Time.timeScale = 0;
     }

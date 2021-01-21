@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Slider secondsText;
     [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject addTimerPopup;
-    private SpawnShape[] spawners;
+    private SpawnShape spawner;
 
     private void Start()
     {
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         {
             cells[i] = 0;
         }
-        spawners = FindObjectsOfType<SpawnShape>();
+        spawner = FindObjectOfType<SpawnShape>();
     }
 
     public bool checkCells(Vector2[] shapeCells, int dropCellIndex)
@@ -84,9 +84,9 @@ public class GameManager : MonoBehaviour
 
     public void checkForGameOver()
     {
-        foreach (SpawnShape spawnShape in spawners)
+        foreach (Shape spawnShape in spawner.getCurrentShapes())
         {
-            Vector2[] currentShape = spawnShape.getCurrentShape().shapeCells;
+            Vector2[] currentShape = spawnShape.shapeCells;
             for (int i = 0; i < cells.Length; i++)
             {
                 bool canBePlaced = checkCells(currentShape, i);
@@ -160,7 +160,7 @@ public class GameManager : MonoBehaviour
 
         if (secondsleft <= 0)
         {
-            //stopGame();
+            stopGame();
         }
     }
 
@@ -177,9 +177,10 @@ public class GameManager : MonoBehaviour
         {
             cellUi.applyStyle();
         }
-        foreach (SpawnShape spawnShape in spawners)
+        
+        for (int i = 0; i < spawner.transform.childCount; i++)
         {
-            spawnShape.getCurrentShape().applyStyle();
+            spawner.transform.GetChild(i).GetComponentInChildren<Shape>().applyStyle();
         }
     }
 }
