@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,12 +21,23 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
 
         foreach (Vector2 vector2 in shapeCells)
         {
-            if (vector2.y > offset) offset=vector2.y;
+            if (vector2.y > offset) offset = vector2.y;
         }
 
-        applyStyle();
+        setUpStyles();
     }
 
+    public void setUpStyles()
+    {
+        var colorScheme = FindObjectOfType<StyleManagerNew>().currentColorScheme;
+        var color = colorScheme.itemsColor[Random.Range(0, colorScheme.itemsColor.Length)];
+        shapeColor = color;
+        foreach (Transform imageCell in transform)
+        {
+            var componentInChildren = imageCell.GetComponentInChildren<Image>();
+            componentInChildren.color = color;
+        }
+    }
 
     IEnumerator ChangeSize(Vector3 targetSize)
     {
@@ -43,12 +55,14 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
     public void OnBeginDrag(PointerEventData eventData)
     {
         stopCoroutine();
+        GetComponent<Image>().raycastTarget = false;
         currentCoroutine = StartCoroutine(ChangeSize(new Vector3(0.95f, 0.95f, 1)));
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         stopCoroutine();
+        GetComponent<Image>().raycastTarget = true;
         currentCoroutine = StartCoroutine(ChangeSize(new Vector3(0.6f, 0.6f, 1)));
         GetComponent<RectTransform>().position = startPos;
     }
@@ -63,7 +77,8 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
 
     public void OnDrag(PointerEventData eventData)
     {
-        GetComponent<RectTransform>().position = Input.mousePosition + new Vector3(isEven ? 50 : 0, 100f + offset*50f, 0);
+        GetComponent<RectTransform>().position =
+            Input.mousePosition + new Vector3(isEven ? 50 : 0, 100f + offset * 50f, 0);
     }
 
     /*public void OnPointerDown(PointerEventData eventData)
@@ -76,12 +91,4 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
     {
         OnEndDrag(eventData);
     }*/
-
-    public void applyStyle()
-    {
-        foreach (Image imageCell in transform.GetComponentsInChildren<Image>())
-        {
-            imageCell.sprite = FindObjectOfType<StyleManager>().getStyle();
-        }
-    }
 }

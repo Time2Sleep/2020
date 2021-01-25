@@ -14,6 +14,7 @@ public class SpawnShape : MonoBehaviour
         int random = Random.Range(0, shapes.Length);
         GameObject shape = Instantiate(shapes[random], target);
         shape.transform.position = target.transform.position;
+        
         gameManager = FindObjectOfType<GameManager>();
     }
 
@@ -41,6 +42,4 @@ public class SpawnShape : MonoBehaviour
             }
         }
     }
-
-    
 }

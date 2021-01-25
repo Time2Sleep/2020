@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Slider secondsText;
     [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject addTimerPopup;
+    [SerializeField] private Text highScore;
     private SpawnShape spawner;
 
     private void Start()
@@ -24,7 +25,9 @@ public class GameManager : MonoBehaviour
         {
             cells[i] = 0;
         }
+
         spawner = FindObjectOfType<SpawnShape>();
+        highScore.text = PlayerPrefs.GetString("highScore", "0");
     }
 
     public bool checkCells(Vector2[] shapeCells, int dropCellIndex)
@@ -35,15 +38,12 @@ public class GameManager : MonoBehaviour
             foreach (Vector2 shapeCell in shapeCells)
             {
                 int index = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
-               /*if (index < 0)
-                {
-                    return false;
-                }*/
 
                 if (cells[index] == 1) //можно за пределы массива уйти
                 {
                     canPlace = false;
                 }
+
                 if (index % 10 == 9 && shapeCell.x < 0)
                 {
                     canPlace = false;
@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }
+
         return canPlace;
     }
 
@@ -74,11 +75,11 @@ public class GameManager : MonoBehaviour
             scoreText.text = score.ToString();
             addTime(0.1f);
         }
-        
+
         GameObject popup = Instantiate(addTimerPopup, GameObject.Find("Canvas").transform);
         popup.transform.position = Input.mousePosition + new Vector3(0, 200f, 0);
         popup.GetComponent<Text>().text = "+" + 0.1f * shapeCells.Length + "s";
-        
+
         checkForBurn();
     }
 
@@ -90,12 +91,13 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < cells.Length; i++)
             {
                 bool canBePlaced = checkCells(currentShape, i);
-                    if (canBePlaced)
-                    {
-                       return;
-                    }
+                if (canBePlaced)
+                {
+                    return;
+                }
             }
         }
+
         stopGame();
     }
 
@@ -123,6 +125,7 @@ public class GameManager : MonoBehaviour
             {
                 if (cells[j * 10 + i] == 1) counter++;
             }
+
             if (counter == 10)
             {
                 for (int j = 0; j < 10; j++)
@@ -156,7 +159,7 @@ public class GameManager : MonoBehaviour
     private void FixedUpdate()
     {
         secondsleft -= 0.02f;
-        secondsText.value = secondsleft/60;
+        secondsText.value = secondsleft / 60;
 
         if (secondsleft <= 0)
         {
@@ -168,19 +171,25 @@ public class GameManager : MonoBehaviour
     {
         gameOver.SetActive(true);
         Time.timeScale = 0;
+
+        if (score > Int32.Parse(highScore.text))
+        {
+            PlayerPrefs.SetString("highScore", score.ToString());
+        }
     }
 
-    public void applyStyle()
+    public CellUI[] GETCellUis()
     {
-        CellUI[] cellUis = GetComponentsInChildren<CellUI>();
-        foreach (CellUI cellUi in cellUis)
-        {
-            cellUi.applyStyle();
-        }
-        
-        for (int i = 0; i < spawner.transform.childCount; i++)
-        {
-            spawner.transform.GetChild(i).GetComponentInChildren<Shape>().applyStyle();
-        }
+        return GetComponentsInChildren<CellUI>();
+    }
+
+    public Slider getSlider()
+    {
+        return secondsText;
+    }
+
+    public Text getScoreText()
+    {
+        return scoreText;
     }
 }
