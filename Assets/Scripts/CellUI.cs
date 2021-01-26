@@ -31,11 +31,9 @@ public class CellUI : MonoBehaviour
         while (Time.time < startTime + overTime)
         {
             transform.GetChild(1).localScale = Vector3.Lerp(transform.GetChild(1).localScale, Vector3.zero, Time.deltaTime * 10);
-            Debug.Log("computing");
             yield return null;
         }
 
-        Debug.Log("calling to default");
         toDefault();
     }
 

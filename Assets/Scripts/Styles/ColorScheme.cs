@@ -4,9 +4,5 @@ using UnityEngine;
 
 public interface ColorScheme
 {
-    public Color getBackgroundSkin();
-
-    public Color[] getItemColors();
-
-    public Color getTextColor();
+   
 }

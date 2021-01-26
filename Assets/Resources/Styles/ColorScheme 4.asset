@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4877379854454c88a1e26d69d4ab2c5c, type: 3}
+  m_Name: ColorScheme 4
+  m_EditorClassIdentifier: 
+  name: KITTY
+  backgroundColor: {r: 1, g: 0.7877358, b: 0.9066971, a: 1}
+  itemsColor:
+  - {r: 0.67123526, g: 0.40450338, b: 0.8490566, a: 1}
+  - {r: 0.9150943, g: 0.6660643, b: 0.5222944, a: 1}
+  - {r: 0.371262, g: 0.67629635, b: 0.9716981, a: 1}
+  - {r: 1, g: 0.41037738, b: 0.43481782, a: 1}
+  - {r: 0.36405307, g: 0.9528302, b: 0.94714147, a: 1}
+  - {r: 0.9622642, g: 0.85025966, b: 0.503827, a: 1}
+  - {r: 0.9528302, g: 0.5348434, b: 0.6790782, a: 1}
+  - {r: 0.34227067, g: 0.7735849, b: 0.29556784, a: 1}
+  - {r: 0.7111405, g: 0.9150943, b: 0.64315593, a: 1}
+  - {r: 0.71028197, g: 0.6236205, b: 0.9245283, a: 1}
+  textColor: {r: 0.9607844, g: 0.9607844, b: 0.9607844, a: 1}
+  highScoreColor: {r: 0.6981132, g: 0.5769863, b: 0.32600567, a: 1}
+  sprite: {fileID: 21300000, guid: 35d646e6d049faa439cb0f8f6e4d3cf4, type: 3}

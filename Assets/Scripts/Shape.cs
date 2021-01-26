@@ -29,13 +29,15 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
 
     public void setUpStyles()
     {
-        var colorScheme = FindObjectOfType<StyleManagerNew>().currentColorScheme;
+        var colorScheme = FindObjectOfType<StyleManagerNew>().getCurrentColorScheme();
         var color = colorScheme.itemsColor[Random.Range(0, colorScheme.itemsColor.Length)];
+        var sprite = colorScheme.sprite;
         shapeColor = color;
         foreach (Transform imageCell in transform)
         {
             var componentInChildren = imageCell.GetComponentInChildren<Image>();
             componentInChildren.color = color;
+            componentInChildren.sprite = sprite;
         }
     }
 
@@ -81,14 +83,5 @@ public class Shape : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHan
             Input.mousePosition + new Vector3(isEven ? 50 : 0, 100f + offset * 50f, 0);
     }
 
-    /*public void OnPointerDown(PointerEventData eventData)
-    {
-        OnBeginDrag(eventData);
-        OnDrag(eventData);
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        OnEndDrag(eventData);
-    }*/
+   
 }

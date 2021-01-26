@@ -16,6 +16,7 @@ public class LevelManager : MonoBehaviour
     public void tryAgain()
     {
         SceneManager.LoadScene(0);
+        FindObjectOfType<GameManager>().newGame();
         Time.timeScale = 1;
     }
     

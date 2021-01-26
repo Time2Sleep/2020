@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour
 {
     private int[] cells = new int[100]; // 0 - пусто, 1 - занято
     [SerializeField] private Text scoreText;
-    private int score = 0;
-    [SerializeField] private float secondsleft = 30f;
+    private int score;
+    private float secondsleft;
     [SerializeField] private Slider secondsText;
     [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject addTimerPopup;
@@ -21,13 +21,45 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < cells.Length; i++)
+        if (PlayerPrefs.GetInt("isGameOver", 0) == 1)
         {
-            cells[i] = 0;
+            stopGame();
         }
-
+        score = PlayerPrefs.GetInt("score", 0);
+        secondsleft = PlayerPrefs.GetFloat("time", 30f);
+        scoreText.text = score.ToString();
         spawner = FindObjectOfType<SpawnShape>();
         highScore.text = PlayerPrefs.GetString("highScore", "0");
+        InvokeRepeating(nameof(saveTime), 3f, 3f);
+    }
+
+    public void newGame()
+    {
+        Debug.Log("loading new game");
+        
+        for (int i = 0; i < cells.Length; i++)
+        {
+            PlayerPrefs.SetInt(i.ToString(), 0);
+            cells[i] = 0;
+        }
+        score = 0;
+        PlayerPrefs.SetInt("score", score);
+        PlayerPrefs.SetInt("isGameOver", 0);
+        PlayerPrefs.SetFloat("time", 30f);
+        scoreText.text = score.ToString();
+    }
+
+    public int[] getCells()
+    {
+        return cells;
+    }
+
+    public void loadValues()
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+            cells[i] = PlayerPrefs.GetInt(i.ToString(), 0);
+        }
     }
 
     public bool checkCells(Vector2[] shapeCells, int dropCellIndex)
@@ -73,7 +105,10 @@ public class GameManager : MonoBehaviour
 
             score++;
             scoreText.text = score.ToString();
+            PlayerPrefs.SetInt("score", score);
             addTime(0.1f);
+            
+            PlayerPrefs.SetInt(cellIndex.ToString(), 1);
         }
 
         GameObject popup = Instantiate(addTimerPopup, GameObject.Find("Canvas").transform);
@@ -97,7 +132,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
         stopGame();
     }
 
@@ -138,10 +172,12 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < listToDelete.Count; i++) //Пробегаемся по всем и удаляем
         {
             cells[listToDelete[i]] = 0;
+            PlayerPrefs.SetInt(listToDelete[i].ToString(), 0);
             transform.GetChild(listToDelete[i]).GetComponentInChildren<CellUI>().fadeOut();
             score++;
             addTime(0.5f);
             scoreText.text = score.ToString();
+            PlayerPrefs.SetInt("score", score);
         }
 
         listToDelete.Clear();
@@ -160,18 +196,24 @@ public class GameManager : MonoBehaviour
     {
         secondsleft -= 0.02f;
         secondsText.value = secondsleft / 60;
-
+        
+       
         if (secondsleft <= 0)
         {
             stopGame();
         }
     }
 
+    void saveTime()
+    {
+        PlayerPrefs.SetFloat("time", secondsleft);
+    }
+
     private void stopGame()
     {
         gameOver.SetActive(true);
         Time.timeScale = 0;
-
+        PlayerPrefs.SetInt("isGameOver", 1);
         if (score > Int32.Parse(highScore.text))
         {
             PlayerPrefs.SetString("highScore", score.ToString());
@@ -191,5 +233,10 @@ public class GameManager : MonoBehaviour
     public Text getScoreText()
     {
         return scoreText;
+    }
+    
+    public Text getHighScoreText()
+    {
+        return highScore;
     }
 }
