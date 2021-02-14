@@ -11,7 +11,7 @@ public class CellUI : MonoBehaviour
 
     void Start()
     {
-        image = transform.GetChild(1).GetComponentInChildren<Image>();
+        image = transform.GetChild(1).GetComponent<Image>();
     }
 
     public void changeColor(Color color)
@@ -37,7 +37,7 @@ public class CellUI : MonoBehaviour
         toDefault();
     }
 
-    private void toDefault()
+    public void toDefault()
     {
         transform.GetChild(1).localScale = new Vector3(1, 1, 1);
         image.color = defaultColor;

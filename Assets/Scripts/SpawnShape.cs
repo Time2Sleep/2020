@@ -13,8 +13,9 @@ public class SpawnShape : MonoBehaviour
     {
         int random = Random.Range(0, shapes.Length);
         GameObject shape = Instantiate(shapes[random], target);
+        shape.name = shapes[random].name;
         shape.transform.position = target.transform.position;
-        
+        PlayerPrefs.SetString("Shape"+target.GetSiblingIndex(), shape.name);
         gameManager = FindObjectOfType<GameManager>();
     }
 
@@ -22,7 +23,16 @@ public class SpawnShape : MonoBehaviour
     {
         foreach (GameObject spawnPoint in SpawnPoints)
         {
-            spawnRandomShape(spawnPoint.transform);
+            if (PlayerPrefs.HasKey("Shape2"))
+            {
+                Debug.Log(PlayerPrefs.GetString("Shape"+spawnPoint.transform.GetSiblingIndex()));
+                GameObject shape = Instantiate(Resources.Load<GameObject>("Prefabs/"+PlayerPrefs.GetString("Shape"+spawnPoint.transform.GetSiblingIndex())), spawnPoint.transform);
+                shape.transform.position = spawnPoint.transform.position;
+            }
+            else
+            {
+                spawnRandomShape(spawnPoint.transform);
+            }
         }
     }
 

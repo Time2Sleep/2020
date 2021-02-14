@@ -31,6 +31,11 @@ public class GameManager : MonoBehaviour
         spawner = FindObjectOfType<SpawnShape>();
         highScore.text = PlayerPrefs.GetString("highScore", "0");
         InvokeRepeating(nameof(saveTime), 3f, 3f);
+
+        if (score == 0)
+        {
+            FindObjectOfType<LevelManager>().pause();
+        }
     }
 
     public void newGame()
@@ -43,12 +48,34 @@ public class GameManager : MonoBehaviour
             cells[i] = 0;
         }
         score = 0;
+        secondsleft = 30f;
         PlayerPrefs.SetInt("score", score);
         PlayerPrefs.SetInt("isGameOver", 0);
         PlayerPrefs.SetFloat("time", 30f);
+        PlayerPrefs.DeleteKey("Shape0");
+        PlayerPrefs.DeleteKey("Shape1");
+        PlayerPrefs.DeleteKey("Shape2");
         scoreText.text = score.ToString();
+        gameOver.SetActive(false);
+
+        clearCells();
+
+        for(int i=0; i<spawner.transform.childCount;i++)
+        {
+            Destroy(spawner.transform.GetChild(i).GetChild(0).gameObject);
+        }
     }
 
+    void clearCells()
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+            cells[i] = 0;
+            PlayerPrefs.SetInt(i.ToString(), 0);
+            transform.GetChild(i).GetChild(1).GetComponent<Image>().color = new Color(0,0,0,0);
+        }
+    }
+    
     public int[] getCells()
     {
         return cells;
@@ -71,7 +98,7 @@ public class GameManager : MonoBehaviour
             {
                 int index = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
 
-                if (cells[index] == 1) //можно за пределы массива уйти
+                if (cells[index] == 1) 
                 {
                     canPlace = false;
                 }
@@ -111,7 +138,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(cellIndex.ToString(), 1);
         }
 
-        GameObject popup = Instantiate(addTimerPopup, GameObject.Find("Canvas").transform);
+        GameObject popup = Instantiate(addTimerPopup, GameObject.Find("spawn_zone").transform);
         popup.transform.position = Input.mousePosition + new Vector3(0, 200f, 0);
         popup.GetComponent<Text>().text = "+" + 0.1f * shapeCells.Length + "s";
 

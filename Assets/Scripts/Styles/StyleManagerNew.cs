@@ -29,7 +29,7 @@ public class StyleManagerNew : MonoBehaviour
         scoreText = gameManager.getScoreText();
         HighScoreText = gameManager.getHighScoreText();
         timerSlider = gameManager.getSlider();
-        currentColorScheme = colorSchemes[PlayerPrefs.GetInt("style")];
+        currentColorScheme = colorSchemes[PlayerPrefs.GetInt("style", 0)];
         
         for(int j=0; j<colorSchemes.Length; j++)
         {
@@ -51,6 +51,8 @@ public class StyleManagerNew : MonoBehaviour
         
         gameManager.loadValues();
         loadCells();
+
+       
     }
 
     public void changeColorScheme(int colorSchemeId)
@@ -69,6 +71,8 @@ public class StyleManagerNew : MonoBehaviour
     private void updateStaticContentStyle()
     {
         scoreText.color = getCurrentColorScheme().textColor;
+        GameObject.Find("PauseButton").GetComponentInChildren<Text>().color = getCurrentColorScheme().textColor;
+        GameObject.Find("Logo").GetComponent<Image>().color = getCurrentColorScheme().textColor;
         HighScoreText.color = getCurrentColorScheme().highScoreColor;
         Camera.main.backgroundColor = getCurrentColorScheme().backgroundColor;
         PauseOverlayPanel.GetComponent<Image>().color = getCurrentColorScheme().backgroundColor;
@@ -86,10 +90,11 @@ public class StyleManagerNew : MonoBehaviour
 
     private void updateCells()
     {
-        var color = getCurrentColorScheme().itemsColor[Random.Range(0, getCurrentColorScheme().itemsColor.Length)];
         var sprite = getCurrentColorScheme().sprite;
         foreach (CellUI cellUi in cells)
         {
+            var color = getCurrentColorScheme().itemsColor[Random.Range(0, getCurrentColorScheme().itemsColor.Length)];
+
             Color cellColor = cellUi.transform.GetChild(1).GetComponent<Image>().color;
             if (cellColor.a > 0f)
             {

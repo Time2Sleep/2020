@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4877379854454c88a1e26d69d4ab2c5c, type: 3}
   m_Name: ColorScheme 1
   m_EditorClassIdentifier: 
-  name: DARK
+  name: Dark
   backgroundColor: {r: 0.18431373, g: 0.16470589, b: 0.29411766, a: 1}
   itemsColor:
   - {r: 0.4771729, g: 0.20784314, b: 0.65882355, a: 1}
