@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Advertisements;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -18,13 +19,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject addTimerPopup;
     [SerializeField] private Text highScore;
     private SpawnShape spawner;
+    [SerializeField] private string gameId = "4012861";
+    [SerializeField] private bool testMode = true;
 
     private void Start()
     {
+        Advertisement.Initialize(gameId, testMode);
+
         if (PlayerPrefs.GetInt("isGameOver", 0) == 1)
         {
             stopGame();
         }
+
         score = PlayerPrefs.GetInt("score", 0);
         secondsleft = PlayerPrefs.GetFloat("time", 30f);
         scoreText.text = score.ToString();
@@ -41,12 +47,13 @@ public class GameManager : MonoBehaviour
     public void newGame()
     {
         Debug.Log("loading new game");
-        
+
         for (int i = 0; i < cells.Length; i++)
         {
             PlayerPrefs.SetInt(i.ToString(), 0);
             cells[i] = 0;
         }
+
         score = 0;
         secondsleft = 30f;
         PlayerPrefs.SetInt("score", score);
@@ -60,7 +67,7 @@ public class GameManager : MonoBehaviour
 
         clearCells();
 
-        for(int i=0; i<spawner.transform.childCount;i++)
+        for (int i = 0; i < spawner.transform.childCount; i++)
         {
             Destroy(spawner.transform.GetChild(i).GetChild(0).gameObject);
         }
@@ -72,10 +79,10 @@ public class GameManager : MonoBehaviour
         {
             cells[i] = 0;
             PlayerPrefs.SetInt(i.ToString(), 0);
-            transform.GetChild(i).GetChild(1).GetComponent<Image>().color = new Color(0,0,0,0);
+            transform.GetChild(i).GetChild(1).GetComponent<Image>().color = new Color(0, 0, 0, 0);
         }
     }
-    
+
     public int[] getCells()
     {
         return cells;
@@ -98,7 +105,7 @@ public class GameManager : MonoBehaviour
             {
                 int index = (int) shapeCell.y * (-10) + (int) shapeCell.x + dropCellIndex;
 
-                if (cells[index] == 1) 
+                if (cells[index] == 1)
                 {
                     canPlace = false;
                 }
@@ -134,7 +141,7 @@ public class GameManager : MonoBehaviour
             scoreText.text = score.ToString();
             PlayerPrefs.SetInt("score", score);
             addTime(0.1f);
-            
+
             PlayerPrefs.SetInt(cellIndex.ToString(), 1);
         }
 
@@ -159,6 +166,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+
         stopGame();
     }
 
@@ -223,8 +231,8 @@ public class GameManager : MonoBehaviour
     {
         secondsleft -= 0.02f;
         secondsText.value = secondsleft / 60;
-        
-       
+
+
         if (secondsleft <= 0)
         {
             stopGame();
@@ -236,6 +244,16 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("time", secondsleft);
     }
 
+    private void showAds()
+    {
+        if (Advertisement.IsReady()) {
+            Advertisement.Show();
+        } 
+        else {
+            Debug.Log("Interstitial ad not ready at the moment! Please try again later!");
+        }
+    }
+
     private void stopGame()
     {
         gameOver.SetActive(true);
@@ -244,7 +262,9 @@ public class GameManager : MonoBehaviour
         if (score > Int32.Parse(highScore.text))
         {
             PlayerPrefs.SetString("highScore", score.ToString());
+            highScore.text = score.ToString();
         }
+        showAds();
     }
 
     public CellUI[] GETCellUis()
@@ -261,7 +281,7 @@ public class GameManager : MonoBehaviour
     {
         return scoreText;
     }
-    
+
     public Text getHighScoreText()
     {
         return highScore;
